@@ -1,24 +1,61 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
-import { News, NewsService } from './news.service';
-import { CreateNewsDto } from './create.news.dto';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+import { NewsService } from './news.service';
+import { CreateNewsDto } from './dto/create.news.dto';
+import { News, NewsEdit } from './news.interface';
+import { renderNewsAll } from '../view/news/news-all';
+import { renderTemplate } from '../view/template';
+import { CommentsService } from './comments/comments.service';
 
 @Controller('news')
 export class NewsController {
-  constructor(private readonly newsService: NewsService) {}
+  constructor(
+    private readonly newsService: NewsService,
+    private readonly commentsService: CommentsService,
+  ) {}
 
   @Get()
   getNews() {
     return this.newsService.getAllNews();
   }
 
+  @Get('/all')
+  getAllView() {
+    const news = this.newsService.getAllNews();
+    const content = renderNewsAll(news);
+
+    return renderTemplate(content, {
+      title: 'Список новостей',
+      description: 'Самые крутые новости на свете',
+    });
+  }
+
   @Get('/:id')
   get(@Param('id') id: number) {
-    return this.newsService.find(id);
+    const news = this.newsService.find(id);
+    const comments = this.commentsService.find(id);
+
+    return {
+      ...news,
+      comments,
+    };
   }
 
   @Post()
-  create(@Body() createNewsDto: CreateNewsDto) {
+  create(@Body() createNewsDto: News) {
     return this.newsService.create(createNewsDto);
+  }
+
+  @Patch('/:id')
+  edit(@Param('id') id: number, @Body() news: NewsEdit) {
+    return this.newsService.edit(id, news);
   }
 
   @Delete('/:id')
