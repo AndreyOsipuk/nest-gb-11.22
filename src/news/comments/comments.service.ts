@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Comment, Comments } from './comments.interface';
+import {Comment, CommentEdit, Comments} from './comments.interface';
 import {getRandomInt} from "../news.service";
 
 @Injectable()
@@ -7,7 +7,7 @@ export class CommentsService {
   private readonly comments: Comments = {
     1: [
       {
-        id: 123,
+        id: '123',
         message: 'Мой первый комментарий',
         author: 'Вася',
       },
@@ -46,5 +46,25 @@ export class CommentsService {
     }
 
     return this.comments[newsId].splice(indexComment, 1)
+  }
+
+  edit(newsId: string | number, commentId: string | number, comment: CommentEdit): boolean | Comment {
+    console.log('commentId', commentId)
+    if(!this.comments[newsId]) {
+      return false
+    }
+
+    const indexComment = this.comments[newsId].findIndex(comment => comment.id === commentId)
+
+    if(indexComment === -1) {
+      return false
+    }
+
+    this.comments[newsId][indexComment] = {
+      ...this.comments[newsId][indexComment],
+      ...comment
+    }
+
+    return this.comments[newsId][indexComment]
   }
 }

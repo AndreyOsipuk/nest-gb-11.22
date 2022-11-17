@@ -4,5 +4,7 @@ export interface Comment {
   author: string;
 }
 
+export type CommentEdit = Partial<Comment>
+
 export type Comments = Record<string | number, Comment[]>;
 

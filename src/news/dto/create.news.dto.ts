@@ -20,5 +20,7 @@ export class CreateNewsDto {
 
   @IsString()
   @IsOptional()
-  countView?: string;
+  countView?: number;
+
+  cover: string
 }

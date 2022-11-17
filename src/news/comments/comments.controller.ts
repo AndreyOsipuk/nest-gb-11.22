@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Patch, Post} from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { Comment } from './comments.interface';
+import {Comment, CommentEdit} from './comments.interface';
 
 @Controller('comments')
 export class CommentsController {
@@ -22,5 +22,14 @@ export class CommentsController {
     @Param('commentId') commentId: string | number,
   ) {
     return this.commentsService.remove(newsId, commentId);
+  }
+
+  @Patch('/:newsId/:commentId')
+  edit(
+    @Param('newsId') newsId: string | number,
+    @Param('commentId') commentId: string | number,
+    @Body() comment: CommentEdit
+  ) {
+      return this.commentsService.edit(newsId, commentId, comment)
   }
 }
